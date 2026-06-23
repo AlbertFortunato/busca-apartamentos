@@ -20,7 +20,7 @@ public class ApartmentSearchService {
 
     public List<ProviderSearchResult> searchByProvider(SearchCriteria criteria) {
         return providers.stream()
-                .map(provider -> provider.search(criteria))
+                .map(provider -> searchSafely(provider, criteria))
                 .toList();
     }
 
@@ -34,5 +34,13 @@ public class ApartmentSearchService {
                 .filter(listing -> !Boolean.TRUE.equals(criteria.getAceitaPets()) || listing.aceitaPets())
                 .sorted(Comparator.comparing(ApartmentListing::aluguel))
                 .toList();
+    }
+
+    private ProviderSearchResult searchSafely(ApartmentProvider provider, SearchCriteria criteria) {
+        try {
+            return provider.search(criteria);
+        } catch (RuntimeException exception) {
+            return new ProviderSearchResult(provider.getClass().getSimpleName(), "", List.of());
+        }
     }
 }

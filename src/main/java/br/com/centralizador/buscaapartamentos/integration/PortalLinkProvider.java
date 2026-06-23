@@ -3,6 +3,7 @@ package br.com.centralizador.buscaapartamentos.integration;
 import br.com.centralizador.buscaapartamentos.dto.SearchCriteria;
 import br.com.centralizador.buscaapartamentos.model.ApartmentListing;
 import br.com.centralizador.buscaapartamentos.model.ProviderSearchResult;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
+@ConditionalOnProperty(name = "apartments.demo.enabled", havingValue = "true")
 public class PortalLinkProvider implements ApartmentProvider {
 
     @Override
