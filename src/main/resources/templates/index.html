@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Busca Apartamentos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<main class="shell">
+    <section class="hero">
+        <div class="hero-copy">
+            <span class="eyebrow">Centralizador de aluguel</span>
+            <h1>Encontre apartamentos bons sem abrir dez abas.</h1>
+            <p>Busque por bairro, preco, quartos e preferencias. O app organiza opcoes e leva voce direto aos portais para confirmar disponibilidade.</p>
+        </div>
+
+        <form class="search-panel" method="get" th:object="${criteria}">
+            <label>
+                Cidade
+                <input th:field="*{cidade}" placeholder="Sao Paulo">
+            </label>
+            <label>
+                Bairro
+                <input th:field="*{bairro}" placeholder="Pinheiros, Centro, Boa Viagem...">
+            </label>
+            <label>
+                Preco minimo
+                <input th:field="*{precoMinimo}" type="number" min="0" step="100" placeholder="0">
+            </label>
+            <label>
+                Preco maximo
+                <input th:field="*{precoMaximo}" type="number" min="0" step="100" placeholder="4500">
+            </label>
+            <label>
+                Quartos
+                <input th:field="*{quartos}" type="number" min="0" placeholder="2">
+            </label>
+            <label>
+                Vagas
+                <input th:field="*{vagas}" type="number" min="0" placeholder="1">
+            </label>
+            <label class="check">
+                <input th:field="*{aceitaPets}" type="checkbox">
+                Aceita pets
+            </label>
+            <button type="submit">Buscar apartamentos</button>
+        </form>
+    </section>
+
+    <section class="provider-bar" th:if="${providers != null}">
+        <a th:each="provider : ${providers}" th:href="${provider.searchUrl}" target="_blank" rel="noreferrer">
+            Abrir busca em <strong th:text="${provider.providerName}">Portal</strong>
+        </a>
+    </section>
+
+    <section class="results">
+        <div class="section-title">
+            <span th:text="${apartments != null ? #lists.size(apartments) : 0}">0</span>
+            <h2>opcoes encontradas</h2>
+        </div>
+
+        <div class="grid" th:if="${apartments != null && !#lists.isEmpty(apartments)}">
+            <article class="card" th:each="apartment : ${apartments}">
+                <img th:src="${apartment.imagemUrl}" th:alt="${apartment.titulo}">
+                <div class="card-body">
+                    <div class="card-top">
+                        <span class="provider" th:text="${apartment.provedor}">Portal</span>
+                        <span th:if="${apartment.aceitaPets}" class="pet">Pet friendly</span>
+                    </div>
+                    <h3 th:text="${apartment.titulo}">Apartamento</h3>
+                    <p class="location" th:text="${apartment.bairro + ', ' + apartment.cidade}">Bairro, Cidade</p>
+                    <div class="price">
+                        <strong th:text="${'R$ ' + #numbers.formatDecimal(apartment.aluguel, 0, 'POINT', 0, 'COMMA')}">R$ 0</strong>
+                        <small th:text="${'+ R$ ' + #numbers.formatDecimal(apartment.condominio, 0, 'POINT', 0, 'COMMA') + ' cond.'}">cond.</small>
+                    </div>
+                    <dl>
+                        <div><dt>Quartos</dt><dd th:text="${apartment.quartos}">2</dd></div>
+                        <div><dt>Vagas</dt><dd th:text="${apartment.vagas}">1</dd></div>
+                        <div><dt>Area</dt><dd th:text="${apartment.metragem + ' m2'}">50 m2</dd></div>
+                    </dl>
+                    <a class="details" th:href="${apartment.detalheUrl}" target="_blank" rel="noreferrer">Ver no portal</a>
+                </div>
+            </article>
+        </div>
+
+        <div class="empty" th:if="${apartments == null || #lists.isEmpty(apartments)}">
+            Ajuste os filtros para encontrar opcoes compativeis com sua busca.
+        </div>
+    </section>
+</main>
+</body>
+</html>
