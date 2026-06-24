@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 675" role="img" aria-label="Apartamento">
+  <rect width="900" height="675" fill="#efe6d8"/>
+  <rect x="170" y="235" width="560" height="290" rx="10" fill="#fffaf3" stroke="#d8cbb9" stroke-width="8"/>
+  <rect x="225" y="285" width="100" height="90" rx="4" fill="#b8d8d4"/>
+  <rect x="400" y="285" width="100" height="90" rx="4" fill="#b8d8d4"/>
+  <rect x="575" y="285" width="100" height="90" rx="4" fill="#b8d8d4"/>
+  <rect x="402" y="430" width="96" height="95" rx="4" fill="#0f766e"/>
+  <path d="M140 250 450 105l310 145" fill="none" stroke="#17211f" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

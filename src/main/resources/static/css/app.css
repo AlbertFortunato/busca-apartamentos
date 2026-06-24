@@ -148,6 +148,11 @@ button:hover,
     background: var(--accent-dark);
 }
 
+button:disabled {
+    cursor: wait;
+    opacity: 0.72;
+}
+
 .provider-bar {
     display: flex;
     flex-wrap: wrap;
