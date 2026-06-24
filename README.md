@@ -4,7 +4,7 @@ Aplicacao Spring Boot para centralizar buscas de apartamentos para aluguel em um
 
 ## O que ja vem pronto
 
-- Front responsivo com filtros de cidade, bairro, preco, quartos, vagas e aceita pets.
+- Front responsivo com filtros de compra/aluguel, cidade, bairro, preco, quartos, vagas e aceita pets.
 - Backend Java Spring Boot com MVC e API REST.
 - Camada de provedores para plugar portais de aluguel.
 - Integracao HTTP real com Mercado Livre Imoveis via API.
@@ -31,7 +31,13 @@ http://localhost:8080
 ## API
 
 ```http
-GET /api/apartamentos?cidade=Sao%20Paulo&bairro=Pinheiros&precoMaximo=4500&quartos=2
+GET /api/apartamentos?tipo=ALUGUEL&cidade=Sao%20Paulo&bairro=Pinheiros&precoMaximo=4500&quartos=2
+```
+
+Para compra:
+
+```http
+GET /api/apartamentos?tipo=COMPRA&cidade=Sao%20Paulo&bairro=Pinheiros&precoMaximo=800000&quartos=2
 ```
 
 ## Sobre integracoes com portais
@@ -50,7 +56,8 @@ Ativo por padrao:
 apartments.mercadolivre.enabled=true
 apartments.mercadolivre.base-url=https://api.mercadolibre.com
 apartments.mercadolivre.site-id=MLB
-apartments.mercadolivre.category-id=MLB1459
+apartments.mercadolivre.rent-category-id=MLB1459
+apartments.mercadolivre.sale-category-id=MLB1459
 apartments.mercadolivre.access-token=
 ```
 

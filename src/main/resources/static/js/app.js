@@ -4,6 +4,9 @@ const grid = document.querySelector("#results-grid");
 const empty = document.querySelector("#results-empty");
 const count = document.querySelector("#results-count");
 const providerBar = document.querySelector("#provider-bar");
+const typeInputs = document.querySelectorAll("[name='tipo']");
+const maxPriceInput = form.querySelector("[name='precoMaximo']");
+const minPriceInput = form.querySelector("[name='precoMinimo']");
 
 const money = new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -40,6 +43,18 @@ form.addEventListener("submit", async (event) => {
     }
 });
 
+typeInputs.forEach((input) => {
+    input.addEventListener("change", () => {
+        const isPurchase = selectedType() === "COMPRA";
+        maxPriceInput.placeholder = isPurchase ? "800000" : "4500";
+        minPriceInput.step = isPurchase ? "10000" : "100";
+        maxPriceInput.step = isPurchase ? "10000" : "100";
+        if (!maxPriceInput.value || maxPriceInput.value === "4500" || maxPriceInput.value === "800000") {
+            maxPriceInput.value = isPurchase ? "800000" : "4500";
+        }
+    });
+});
+
 async function fetchJson(url) {
     const response = await fetch(url, {
         headers: {
@@ -56,7 +71,7 @@ async function fetchJson(url) {
 
 function setLoading(isLoading) {
     button.disabled = isLoading;
-    button.textContent = isLoading ? "Buscando..." : "Buscar apartamentos";
+    button.textContent = isLoading ? "Buscando..." : `Buscar apartamentos para ${selectedType() === "COMPRA" ? "comprar" : "alugar"}`;
     empty.hidden = false;
     empty.textContent = isLoading ? "Consultando API de apartamentos..." : empty.textContent;
 }
@@ -85,6 +100,7 @@ function renderCard(apartment) {
     const condo = Number(apartment.condominio || 0);
     const area = Number(apartment.metragem || 0);
     const detailUrl = apartment.detalheUrl || "#";
+    const isPurchase = selectedType() === "COMPRA";
 
     return `
         <article class="card">
@@ -98,7 +114,7 @@ function renderCard(apartment) {
                 <p class="location">${escapeHtml(apartment.bairro || "Bairro nao informado")}, ${escapeHtml(apartment.cidade || "Cidade nao informada")}</p>
                 <div class="price">
                     <strong>${money.format(Number(apartment.aluguel || 0))}</strong>
-                    <small>${condo > 0 ? `+ ${money.format(condo)} cond.` : "Condominio nao informado"}</small>
+                    <small>${isPurchase ? "Valor de venda" : condo > 0 ? `+ ${money.format(condo)} cond.` : "Condominio nao informado"}</small>
                 </div>
                 <dl>
                     <div><dt>Quartos</dt><dd>${Number(apartment.quartos || 0)}</dd></div>
@@ -122,4 +138,8 @@ function escapeHtml(value) {
 
 function escapeAttribute(value) {
     return escapeHtml(value);
+}
+
+function selectedType() {
+    return form.querySelector("[name='tipo']:checked")?.value || "ALUGUEL";
 }

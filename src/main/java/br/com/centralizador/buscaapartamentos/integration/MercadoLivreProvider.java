@@ -3,6 +3,7 @@ package br.com.centralizador.buscaapartamentos.integration;
 import br.com.centralizador.buscaapartamentos.config.MercadoLivreProperties;
 import br.com.centralizador.buscaapartamentos.dto.SearchCriteria;
 import br.com.centralizador.buscaapartamentos.model.ApartmentListing;
+import br.com.centralizador.buscaapartamentos.model.BusinessType;
 import br.com.centralizador.buscaapartamentos.model.ProviderSearchResult;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -48,10 +49,11 @@ public class MercadoLivreProvider implements ApartmentProvider {
     }
 
     private String buildSearchUri(SearchCriteria criteria) {
-        var query = String.join(" ", criteria.getBairro(), criteria.getCidade(), "apartamento aluguel").trim();
+        var businessType = criteria.getTipo();
+        var query = String.join(" ", criteria.getBairro(), criteria.getCidade(), "apartamento", businessType.getQueryTerm()).trim();
         var builder = UriComponentsBuilder
                 .fromPath("/sites/{siteId}/search")
-                .queryParam("category", properties.getCategoryId())
+                .queryParam("category", categoryIdFor(businessType))
                 .queryParam("q", query)
                 .queryParam("limit", 24);
 
@@ -66,6 +68,10 @@ public class MercadoLivreProvider implements ApartmentProvider {
         return builder.buildAndExpand(properties.getSiteId())
                 .encode(StandardCharsets.UTF_8)
                 .toUriString();
+    }
+
+    private String categoryIdFor(BusinessType businessType) {
+        return businessType == BusinessType.COMPRA ? properties.getSaleCategoryId() : properties.getRentCategoryId();
     }
 
     private List<ApartmentListing> mapListings(JsonNode response, SearchCriteria criteria) {
@@ -87,7 +93,7 @@ public class MercadoLivreProvider implements ApartmentProvider {
 
         return new ApartmentListing(
                 text(item, "id", ""),
-                text(item, "title", "Apartamento para aluguel"),
+                text(item, "title", "Apartamento para " + criteria.getTipo().getQueryTerm()),
                 blankToDefault(neighborhood, "Bairro nao informado"),
                 blankToDefault(city, "Cidade nao informada"),
                 money(item.path("price")),

@@ -1,9 +1,12 @@
 package br.com.centralizador.buscaapartamentos.dto;
 
+import br.com.centralizador.buscaapartamentos.model.BusinessType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 public class SearchCriteria {
+
+    private BusinessType tipo = BusinessType.ALUGUEL;
 
     @NotBlank(message = "Informe uma cidade")
     private String cidade = "Sao Paulo";
@@ -23,6 +26,14 @@ public class SearchCriteria {
     private Integer vagas;
 
     private Boolean aceitaPets = false;
+
+    public BusinessType getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(BusinessType tipo) {
+        this.tipo = tipo == null ? BusinessType.ALUGUEL : tipo;
+    }
 
     public String getCidade() {
         return cidade;

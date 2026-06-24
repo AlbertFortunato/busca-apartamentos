@@ -7,7 +7,8 @@ public class MercadoLivreProperties {
 
     private String baseUrl = "https://api.mercadolibre.com";
     private String siteId = "MLB";
-    private String categoryId = "MLB1459";
+    private String rentCategoryId = "MLB1459";
+    private String saleCategoryId = "MLB1459";
     private String accessToken = "";
 
     public String getBaseUrl() {
@@ -26,12 +27,20 @@ public class MercadoLivreProperties {
         this.siteId = siteId;
     }
 
-    public String getCategoryId() {
-        return categoryId;
+    public String getRentCategoryId() {
+        return rentCategoryId;
     }
 
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
+    public void setRentCategoryId(String rentCategoryId) {
+        this.rentCategoryId = rentCategoryId;
+    }
+
+    public String getSaleCategoryId() {
+        return saleCategoryId;
+    }
+
+    public void setSaleCategoryId(String saleCategoryId) {
+        this.saleCategoryId = saleCategoryId;
     }
 
     public String getAccessToken() {

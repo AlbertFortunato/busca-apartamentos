@@ -13,12 +13,23 @@
 <main class="shell">
     <section class="hero">
         <div class="hero-copy">
-            <span class="eyebrow">Centralizador de aluguel</span>
+            <span class="eyebrow">Centralizador imobiliario</span>
             <h1>Encontre apartamentos bons sem abrir dez abas.</h1>
-            <p>Busque por bairro, preco, quartos e preferencias. O app organiza opcoes e leva voce direto aos portais para confirmar disponibilidade.</p>
+            <p>Busque para alugar ou comprar por bairro, preco, quartos e preferencias. O app organiza opcoes e leva voce direto aos portais para confirmar disponibilidade.</p>
         </div>
 
         <form class="search-panel" id="apartment-search-form" method="get" th:object="${criteria}">
+            <fieldset class="segmented">
+                <legend>Tipo de busca</legend>
+                <label>
+                    <input th:field="*{tipo}" type="radio" value="ALUGUEL" checked>
+                    Alugar
+                </label>
+                <label>
+                    <input th:field="*{tipo}" type="radio" value="COMPRA">
+                    Comprar
+                </label>
+            </fieldset>
             <label>
                 Cidade
                 <input th:field="*{cidade}" placeholder="Sao Paulo">

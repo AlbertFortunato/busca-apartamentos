@@ -33,7 +33,7 @@ public class PortalLinkProvider implements ApartmentProvider {
         var location = String.join(" ", criteria.getBairro(), criteria.getCidade()).trim();
         return UriComponentsBuilder
                 .fromUriString("https://www.google.com/search")
-                .queryParam("q", location + " apartamento aluguel")
+                .queryParam("q", location + " apartamento " + criteria.getTipo().getQueryTerm())
                 .build()
                 .encode(StandardCharsets.UTF_8)
                 .toUriString();
@@ -46,8 +46,10 @@ public class PortalLinkProvider implements ApartmentProvider {
             case 2 -> "Consolacao";
             default -> "Pinheiros";
         });
-        var maxPrice = criteria.getPrecoMaximo() == null ? 4500 : criteria.getPrecoMaximo();
-        var rent = BigDecimal.valueOf(Math.max(1800, maxPrice - (index * 650L)));
+        var defaultPrice = criteria.getTipo().getQueryTerm().equals("compra") ? 650000 : 4500;
+        var maxPrice = criteria.getPrecoMaximo() == null ? defaultPrice : criteria.getPrecoMaximo();
+        var minimum = criteria.getTipo().getQueryTerm().equals("compra") ? 250000 : 1800;
+        var rent = BigDecimal.valueOf(Math.max(minimum, maxPrice - (index * 650L)));
 
         return new ApartmentListing(
                 UUID.nameUUIDFromBytes((provider + title + city + neighborhood).getBytes(StandardCharsets.UTF_8)).toString(),
@@ -68,20 +70,22 @@ public class PortalLinkProvider implements ApartmentProvider {
 
     private String buildProviderSearchUrl(String provider, SearchCriteria criteria) {
         var location = String.join(" ", criteria.getBairro(), criteria.getCidade()).trim();
-        var query = location.isBlank() ? "apartamento aluguel" : location + " apartamento aluguel";
+        var query = location.isBlank()
+                ? "apartamento " + criteria.getTipo().getQueryTerm()
+                : location + " apartamento " + criteria.getTipo().getQueryTerm();
 
         return switch (provider) {
-            case "QuintoAndar" -> UriComponentsBuilder.fromUriString("https://www.quintoandar.com.br/alugar/imovel")
+            case "QuintoAndar" -> UriComponentsBuilder.fromUriString("https://www.quintoandar.com.br/" + criteria.getTipo().getActionLabel() + "/imovel")
                     .queryParam("q", query)
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
-            case "ZAP Imoveis" -> UriComponentsBuilder.fromUriString("https://www.zapimoveis.com.br/aluguel/apartamentos/")
+            case "ZAP Imoveis" -> UriComponentsBuilder.fromUriString("https://www.zapimoveis.com.br/" + criteria.getTipo().getQueryTerm() + "/apartamentos/")
                     .queryParam("onde", query)
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
-            default -> UriComponentsBuilder.fromUriString("https://www.vivareal.com.br/aluguel/")
+            default -> UriComponentsBuilder.fromUriString("https://www.vivareal.com.br/" + criteria.getTipo().getQueryTerm() + "/")
                     .queryParam("onde", query)
                     .build()
                     .encode(StandardCharsets.UTF_8)
