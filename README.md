@@ -63,6 +63,22 @@ apartments.mercadolivre.access-token=
 
 Se a API exigir token no seu ambiente/conta, preencha `apartments.mercadolivre.access-token`.
 
+Quando o Mercado Livre bloquear a chamada anonima, o endpoint de provedores retorna status `ERROR` com a mensagem do problema:
+
+```http
+GET /api/apartamentos/provedores?tipo=ALUGUEL&cidade=Sao%20Paulo
+```
+
+Exemplo:
+
+```json
+{
+  "providerName": "Mercado Livre Imoveis",
+  "status": "ERROR",
+  "errorMessage": "Mercado Livre retornou HTTP 403. Configure apartments.mercadolivre.access-token ou valide permissao da API."
+}
+```
+
 ### VivaReal, ZAP Imoveis e QuintoAndar
 
 Nao implementei scraping desses portais. Para integracao real com eles, voce precisa de API/parceria autorizada e as credenciais correspondentes. Com isso em maos, basta criar uma classe que implemente `ApartmentProvider` e mapear o JSON retornado para `ApartmentListing`.

@@ -88,7 +88,11 @@ function renderProviders(providers) {
     const availableProviders = providers.filter((provider) => provider.searchUrl);
     providerBar.hidden = availableProviders.length === 0;
     providerBar.innerHTML = availableProviders
-        .map((provider) => `
+        .map((provider) => provider.status === "ERROR" ? `
+            <a class="provider-error" href="${escapeAttribute(provider.searchUrl)}" target="_blank" rel="noreferrer">
+                ${escapeHtml(provider.providerName)} indisponivel: <strong>${escapeHtml(provider.errorMessage)}</strong>
+            </a>
+        ` : `
             <a href="${escapeAttribute(provider.searchUrl)}" target="_blank" rel="noreferrer">
                 Abrir busca em <strong>${escapeHtml(provider.providerName)}</strong>
             </a>

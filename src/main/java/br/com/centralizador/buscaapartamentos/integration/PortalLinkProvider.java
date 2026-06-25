@@ -18,7 +18,7 @@ public class PortalLinkProvider implements ApartmentProvider {
 
     @Override
     public ProviderSearchResult search(SearchCriteria criteria) {
-        return new ProviderSearchResult(
+        return ProviderSearchResult.ok(
                 "Portais parceiros",
                 buildUnifiedSearchUrl(criteria),
                 List.of(

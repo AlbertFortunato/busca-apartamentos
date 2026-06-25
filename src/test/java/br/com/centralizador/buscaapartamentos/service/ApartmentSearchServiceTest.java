@@ -34,14 +34,18 @@ class ApartmentSearchServiceTest {
 
         assertThat(service.searchByProvider(new SearchCriteria()))
                 .singleElement()
-                .satisfies(result -> assertThat(result.listings()).isEmpty());
+                .satisfies(result -> {
+                    assertThat(result.listings()).isEmpty();
+                    assertThat(result.status()).isEqualTo("ERROR");
+                    assertThat(result.errorMessage()).contains("Provider unavailable");
+                });
     }
 
     private ApartmentProvider fakeProvider() {
         return criteria -> new ProviderSearchResult("Fake", "https://example.com", List.of(
                 listing("1", 2800),
                 listing("2", 4200)
-        ));
+        ), "OK", "");
     }
 
     private ApartmentListing listing(String id, int rent) {

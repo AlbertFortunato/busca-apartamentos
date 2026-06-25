@@ -208,6 +208,10 @@ button:disabled {
     background: #1f2937;
 }
 
+.provider-bar .provider-error {
+    background: #7f1d1d;
+}
+
 .results {
     padding-top: 18px;
 }

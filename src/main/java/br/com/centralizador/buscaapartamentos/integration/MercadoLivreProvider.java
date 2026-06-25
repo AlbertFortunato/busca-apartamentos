@@ -8,6 +8,7 @@ import br.com.centralizador.buscaapartamentos.model.ProviderSearchResult;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -35,17 +36,26 @@ public class MercadoLivreProvider implements ApartmentProvider {
     public ProviderSearchResult search(SearchCriteria criteria) {
         var uri = buildSearchUri(criteria);
 
-        JsonNode response = restClient.get()
-                .uri(uri)
-                .headers(headers -> {
-                    if (properties.getAccessToken() != null && !properties.getAccessToken().isBlank()) {
-                        headers.setBearerAuth(properties.getAccessToken());
-                    }
-                })
-                .retrieve()
-                .body(JsonNode.class);
+        try {
+            JsonNode response = restClient.get()
+                    .uri(uri)
+                    .headers(headers -> {
+                        if (properties.getAccessToken() != null && !properties.getAccessToken().isBlank()) {
+                            headers.setBearerAuth(properties.getAccessToken());
+                        }
+                    })
+                    .retrieve()
+                    .body(JsonNode.class);
 
-        return new ProviderSearchResult(PROVIDER_NAME, properties.getBaseUrl() + uri, mapListings(response, criteria));
+            return ProviderSearchResult.ok(PROVIDER_NAME, properties.getBaseUrl() + uri, mapListings(response, criteria));
+        } catch (RestClientResponseException exception) {
+            return ProviderSearchResult.unavailable(
+                    PROVIDER_NAME,
+                    buildWebFallbackUrl(criteria),
+                    "Mercado Livre retornou HTTP " + exception.getStatusCode().value()
+                            + ". Configure apartments.mercadolivre.access-token ou valide permissao da API."
+            );
+        }
     }
 
     private String buildSearchUri(SearchCriteria criteria) {
@@ -72,6 +82,19 @@ public class MercadoLivreProvider implements ApartmentProvider {
 
     private String categoryIdFor(BusinessType businessType) {
         return businessType == BusinessType.COMPRA ? properties.getSaleCategoryId() : properties.getRentCategoryId();
+    }
+
+    private String buildWebFallbackUrl(SearchCriteria criteria) {
+        var query = String.join("-", criteria.getBairro(), criteria.getCidade(), "apartamento", criteria.getTipo().getQueryTerm())
+                .trim()
+                .replaceAll("\\s+", "-")
+                .replaceAll("-+", "-");
+
+        return UriComponentsBuilder
+                .fromUriString("https://lista.mercadolivre.com.br/imoveis/" + query)
+                .build()
+                .encode(StandardCharsets.UTF_8)
+                .toUriString();
     }
 
     private List<ApartmentListing> mapListings(JsonNode response, SearchCriteria criteria) {

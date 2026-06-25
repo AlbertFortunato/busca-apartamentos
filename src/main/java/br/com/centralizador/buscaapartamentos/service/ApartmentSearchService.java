@@ -40,7 +40,11 @@ public class ApartmentSearchService {
         try {
             return provider.search(criteria);
         } catch (RuntimeException exception) {
-            return new ProviderSearchResult(provider.getClass().getSimpleName(), "", List.of());
+            return ProviderSearchResult.unavailable(
+                    provider.getClass().getSimpleName(),
+                    "",
+                    "Falha inesperada no provider: " + exception.getMessage()
+            );
         }
     }
 }
